@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>formulario para registrar clientes</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-brand">
+            <i class="fa-solid fa-clinic-medical"></i>
+            <span>FarmaVillazar POS</span>
+        </div>
+        <div class="nav-links">
+            <button class="nav-btn active" onclick="cambiarPestana('seccion-registrar')">
+                <i class="fa-solid fa-user-plus"></i> Registrar Cliente
+            </button>
+            <button class="nav-btn" onclick="cambiarPestana('seccion-clientes')">
+                <i class="fa-solid fa-users"></i> Clientes Registrados
+            </button>
+        </div>
+    </nav>
+
+    <!-- CONTENEDOR PRINCIPAL -->
+    <main class="main-container">
+
+        <!-- MENSAJES -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }}">
+                {{ message }}
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <!-- SECCIÓN 1: FORMULARIO -->
+        <section id="seccion-registrar" class="dashboard-section active">
+            <div class="card card-form">
+                <h2><i class="fa-solid fa-id-card"></i> Registrar Nuevo Cliente</h2>
+                <form action="/registrar" method="POST">
+                    <div class="form-group">
+                        <label>Nombre Completo</label>
+                        <input type="text" name="nombre_completo" placeholder="Ej. Juan Pérez" required>
+                    </div>
+                    <div class="form-group">
+                        <label>DNI / RUC</label>
+                        <input type="text" name="dni_ruc" placeholder="Ej. 72345678" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Correo Electrónico</label>
+                        <input type="email" name="correo" placeholder="correo@ejemplo.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha de Nacimiento</label>
+                        <input type="date" name="fecha_nacimiento" required>
+                    </div>
+                    <button type="submit" class="btn-submit">Guardar Cliente</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 2: TABLA -->
+        <section id="seccion-clientes" class="dashboard-section">
+            <div class="card">
+                <div class="flex-header">
+                    <h2><i class="fa-solid fa-list-check"></i> Clientes Registrados</h2>
+                    <div class="search-box">
+                        <input type="text" id="input-busqueda" placeholder="Buscar por DNI o Nombre..." onkeyup="filtrarTabla()">
+                    </div>
+                </div>
+
+                {% if clientes %}
+                <table class="data-table" id="tabla-clientes">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre Completo</th>
+                            <th>DNI / RUC</th>
+                            <th>Correo Electrónico</th>
+                            <th>Fecha Nacimiento</th>
+                            <th>Fecha Registro</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cliente in clientes %}
+                        <tr>
+                            <td>#{{ cliente.id_cliente }}</td>
+                            <td><strong>{{ cliente.nombre_completo }}</strong></td>
+                            <td>{{ cliente.dni_ruc }}</td>
+                            <td>{{ cliente.correo }}</td>
+                            <td>{{ cliente.fecha_nacimiento }}</td>
+                            <td>{{ cliente.fecha_registro }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p>No hay clientes registrados.</p>
+                {% endif %}
+            </div>
+        </section>
+
+    </main>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
